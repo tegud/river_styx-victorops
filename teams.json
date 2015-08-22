@@ -1,0 +1,32 @@
+{
+	"teams": [
+		{ 
+			"name": "Reservations",
+			"NewRelic": "RES"
+		},
+		{ 
+			"name": "HotelDistribution",
+			"NewRelic": "DIST"
+		},
+		{ 
+			"name": "HotelAcquisitions",
+			"NewRelic": "AQ"
+		},
+		{ 
+			"name": "Moonstick",
+			"NewRelic": "SWP"
+		},
+		{ 
+			"name": "Search",
+			"NewRelic": "SRCH"
+		},
+		{ 
+			"name": "CustomerManagement",
+			"NewRelic": "CM"
+		},
+		{ 
+			"name": "Legacy",
+			"NewRelic": "GB"
+		}
+	]
+}
