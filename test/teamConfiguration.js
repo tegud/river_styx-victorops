@@ -14,6 +14,22 @@ describe('Team Configuration', function() {
 			})).to.be('Unknown');
 		});
 
+		it('returns Unknown when the team does not have a monitoring_tool definition', function() {
+			var teamConfiguration = new TeamConfiguration({
+				"teams": [
+					{ 
+						"name": "Reservations",
+						"NewRelic": "RES"
+					}
+				]
+			});
+
+			expect(teamConfiguration.getTeamForAlert({
+				monitoring_tool: "ICINGA",
+				application_name: "RES - Booking Web"
+			})).to.be('Unknown');
+		});
+
 		it('gets team for new relic with correct product prefix', function() {
 			var teamConfiguration = new TeamConfiguration({
 				"teams": [
