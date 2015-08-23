@@ -8,7 +8,7 @@ describe('fixVictorOpsAlert', function() {
 		});
 
 		it('leaves removes redundant quote marks from beginning and end of strings', function() {
-			expect(fixVictorOpsAlert.cleanUpStrings({ vo_routing_keys: '"TEST"' }).vo_routing_keys).to.be('TEST');
+			expect(fixVictorOpsAlert.cleanUpStrings({ vo_routing_keys: 'TEST' }).vo_routing_keys).to.be('TEST');
 		});
 
 		it('handles non-string types', function() {
@@ -63,6 +63,101 @@ describe('fixVictorOpsAlert', function() {
 			expect(fixVictorOpsAlert.correctTypes({ 
 					incident: 1
 				}).incident).to.be(1);
+		});
+	});
+
+	describe('prune properties', function() {
+		it('corrects icinga alert', function() {
+			expect(fixVictorOpsAlert.pruneProperties({
+				incident: '7794976',
+				ack_msg: '',
+				monitoring_tool: 'ICINGA',
+				_contactvo_command_url: '/nagiosCmds',
+				state_start_time: '1440289067',
+				vo_alert_file: '1440289187___9cd08bf7-42da-4eb6-be50-16bcb7f73fed',
+				hostname: 'Booking Form Reservations Api',
+				timestamp: '1440289187',
+				notificationtype: 'PROBLEM',
+				vo_alert_type: 'SERVICE',
+				vo_alert_rcv_time: '1440289190245',
+				hostalias: 'Booking Form Reservations Api',
+				_contactvo_alert_url: '/nagios',
+				lastservicestatechange: '1440289067',
+				_contactvo_queue_dir: '/var/nagios',
+				commandfile: '/var/run/icinga2/cmd/icinga2.cmd',
+				entity_display_name: 'Errors',
+				contactgroupname: 'VictorOps',
+				message_type: 'CRITICAL',
+				alert_type: 'PROBLEM',
+				serviceoutput: 'Current value: 33.0, warn threshold: 1.0, crit threshold: 10.0',
+				host_name: 'Booking Form Reservations Api',
+				vo_uuid: 'd902f584-c263-4584-bedb-bba67b873bd5',
+				entity_state: 'CRITICAL',
+				statusdatafile: '/var/cache/icinga2/status.dat',
+				lasthoststatechange: '1431943202',
+				timet: '1440289187',
+				_contactvo_status_url: '/nagiosStatus',
+				_contactvo_organization_id: 'laterooms',
+				ack_author: '',
+				api_key: 'd76693dd-3290-4e2a-b0d0-d3f2126f7da5',
+				entity_id: 'monitoringserver.domain.com/Booking Form Reservations Api/Errors',
+				servicedisplayname: 'Errors',
+				state_message: 'Current value: 33.0, warn threshold: 1.0, crit threshold: 10.0',
+				_contactvo_monitor_name: 'monitoringserver.domain.com',
+				_contactvo_protocol: 'https',
+				servicedesc: 'Errors',
+				longdatetime: '2015-08-23 01:19:47 +0100',
+				_contactvo_contactemail: 'steve.elliot@laterooms.com',
+				_contactvo_organization_key: 'd76693dd-3290-4e2a-b0d0-d3f2126f7da5',
+				_contactvo_log_dir: '/var/log/victorops',
+				hoststate: 'UP',
+				_contactvo_ping_url: '/ping',
+				message: 'PROBLEM Booking Form Reservations Api monitoringserver.domain.com/Booking Form Reservations Api/Errors CRITICAL - Current value: 33.0, warn threshold: 1.0, crit threshold: 10.0',
+				_contactvo_plugin_home: '/opt/victorops/nagios_plugin',
+				servicestate: 'CRITICAL',
+				_contactvo_max_send_delay: '60',
+				entity_is_host: 'false',
+				_contactvo_alert_host: 'alert.victorops.com',
+				vo_organization_id: 'laterooms',
+				routing_key: 'VictorOps',
+				vo_monitor_type: '1',
+				summary: 'PROBLEM Booking Form Reservations Api monitoringserver.domain.com/Booking Form Reservations Api/Errors CRITICAL',
+				hostdisplayname: 'Booking Form Reservations Api' 
+			})).to.eql({
+				incident: '7794976',
+				monitoring_tool: 'ICINGA',
+				state_start_time: '1440289067',
+				hostname: 'Booking Form Reservations Api',
+				'@timestamp': '1440289187',
+				notification_type: 'PROBLEM',
+				contact_group_name: 'VictorOps',
+				vo_alert_type: 'SERVICE',
+				ack_author: '',
+				vo_alert_rcv_time: '1440289190245',
+				host_alias: 'Booking Form Reservations Api',
+				last_service_state_change: '1440289067',
+				entity_display_name: 'Errors',
+				message_type: 'CRITICAL',
+				alert_type: 'PROBLEM',
+				service_output: 'Current value: 33.0, warn threshold: 1.0, crit threshold: 10.0',
+				host_name: 'Booking Form Reservations Api',
+				vo_uuid: 'd902f584-c263-4584-bedb-bba67b873bd5',
+				entity_state: 'CRITICAL',
+				last_host_state_change: '1431943202',
+				entity_id: 'monitoringserver.domain.com/Booking Form Reservations Api/Errors',
+				service_display_name: 'Errors',
+				state_message: 'Current value: 33.0, warn threshold: 1.0, crit threshold: 10.0',
+				icinga_instance: 'monitoringserver.domain.com',
+				service_desc: 'Errors',
+				host_state: 'UP',
+				message: 'PROBLEM Booking Form Reservations Api monitoringserver.domain.com/Booking Form Reservations Api/Errors CRITICAL - Current value: 33.0, warn threshold: 1.0, crit threshold: 10.0',
+				service_state: 'CRITICAL',
+				entity_is_host: 'false',
+				routing_key: 'VictorOps',
+				vo_monitor_type: '1',
+				summary: 'PROBLEM Booking Form Reservations Api monitoringserver.domain.com/Booking Form Reservations Api/Errors CRITICAL',
+				host_display_name: 'Booking Form Reservations Api'
+			});
 		});
 	});
 });
