@@ -5,6 +5,7 @@ var amqpSub = require('./amqp-sub');
 var fs = require('fs');
 var nock = require('nock');
 var logger = require('../lib/logger').forModule('Integration Test');
+var events = require('../lib/events');
 var App = proxyquire('../lib/server', {
 	'./config': function() {
 		return {
@@ -32,15 +33,16 @@ describe('river_styx-victorops', function() {
 	beforeEach(function() {
 		fakeEsSocumentStore = new FakeEsSocumentStore();
 		fakeEsSocumentStore.start();
-
+		events.removeAllListeners();
 	});
 
 	afterEach(function() {
 		fakeEsSocumentStore.stop();
+		amqpSub.reset();
 	});
 
 	describe('victorops webhook alert', function() {
-		it.only('is stored to elasticsearch', function(done) {
+		it('is stored to elasticsearch', function(done) {
 			var mockAmqpServer = amqpSub.mock({ host: '127.0.0.1', port: 5672 })
 			inputExchange = mockAmqpServer.exchange('river-styx');
 
@@ -121,26 +123,9 @@ describe('river_styx-victorops', function() {
 			    "routingKey": "newRelic",
 			    "voMonitorType": 6,
 			    "summary": "PROBLEM  NewRelic-Apdex score &lt; 0.7-17039499- CRITICAL",
-			    "team": "Unknown"
+			    "team": "Unknown",
+            	"incidentName": '1234'
             };
-
-            var expectedNameEsUpdate = {
-			    voUuid: "b295e252-67f2-4317-ab51-fa2856f4fb2d",
-            	incidentName: '1234'
-            };
-
-			var storeToEs = nock('http://localhost:9200')
-                .post('/releases-2015.09/victoropsAlert/b295e252-67f2-4317-ab51-fa2856f4fb2d/_update?retry_on_conflict=3', {
-                	doc: expectedAlertEsRecord,
-                	upsert: expectedAlertEsRecord
-                })
-                .reply(200, { })
-                .post('/releases-2015.09/victoropsAlert/b295e252-67f2-4317-ab51-fa2856f4fb2d/_update?retry_on_conflict=3', {
-                	doc: expectedNameEsUpdate,
-                	upsert: expectedNameEsUpdate
-                })
-                .reply(200, { })
-                .log(console.log);
 
 			new App({
 					elasticsearch: {
@@ -155,12 +140,14 @@ describe('river_styx-victorops', function() {
 						inputExchange.publish('', JSON.stringify(events.shift())); 
 					}
 				})
-				.then(function() {
-					setTimeout(function() {
-						storeToEs.done();
-						console.log('>>>>>>>> Test Complete');
-						done();
-					}, 1000);
+				.then(waitFor(100))
+				.then(fakeEsSocumentStore.get.bind(undefined, 'releases-2015.09', 'victoropsAlert', 'b295e252-67f2-4317-ab51-fa2856f4fb2d'))
+				.then(function(storedDocument) {
+					expect(storedDocument).to.eql(expectedAlertEsRecord);
+					done();
+				})
+				.catch(function(e) {
+					expect(e).to.be(null); 
 				});
 		});
 	});

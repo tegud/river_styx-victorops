@@ -1,5 +1,6 @@
 var http = require('http');
 var Promise = require('bluebird');
+var _ = require('lodash');
 
 module.exports = function() {
 	var indicies = {};
@@ -31,7 +32,10 @@ module.exports = function() {
 			if(!indicies[index][type][id]) {
 				indicies[index][type][id] = parsedBody.doc;
 			}
-			
+			else {
+				_.merge(indicies[index][type][id], parsedBody.upsert);
+			}
+
 			response.writeHead(200, {"Content-Type": "text/html"});
 			response.end();
 		});
@@ -44,8 +48,6 @@ module.exports = function() {
 		get: function(index, type, id) {
 			return new Promise(function(resolve, reject) {
 				if(!indicies[index]) {
-					console.log('*************');
-					console.log(indicies);
 					return reject('Index missing');
 				}
 
@@ -65,7 +67,7 @@ module.exports = function() {
 
 		},
 		stop: function() {
-
+			server.close();
 		}
 	}
 };

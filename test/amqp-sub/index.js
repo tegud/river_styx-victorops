@@ -124,6 +124,9 @@ function ConnectionIntercept(options) {
 					}).bind(exchanges[exchangeName])
 				};
 			}
+		},
+		clearEvents: function() {
+			eventEmitter.removeAllListeners();
 		}
 	};
 }
@@ -139,5 +142,16 @@ module.exports = {
 		}
 
 		return interceptedConnections[connectionKey].api;
+	},
+	reset: function() {
+		logger.logInfo('Reset message queue intercepts');
+
+		_.each(interceptedConnections, function(connection) {
+			connection.clearEvents();
+		});
+
+		interceptedConnections = {};
+		queues = {};
+		exchanges = {};
 	}
 }
