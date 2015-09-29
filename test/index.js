@@ -27,6 +27,14 @@ function waitFor(time) {
 	};
 }
 
+expectObjectToHaveProperties = function(obj) {
+	var assertions = this;
+
+	Object.keys(assertions).forEach(function(property) {
+		expect(obj).to.have.property(property, assertions[property]);
+	});
+};
+
 describe('river_styx-victorops', function() {
 	var fakeEsSocumentStore;
 	var inputExchange;
@@ -101,39 +109,10 @@ describe('river_styx-victorops', function() {
 				})
 				.then(waitFor(100))
 				.then(fakeEsSocumentStore.get.bind(undefined, 'releases-2015.09', 'victoropsAlert', 'b295e252-67f2-4317-ab51-fa2856f4fb2d'))
-				.then(function(storedDocument) {
-					expect(storedDocument).to.eql({
-					    "incident": 7794913,
-					    "monitoringTool": "NewRelic",
-					    "stateStartTime": "2015-08-23T00:10:13+00:00",
-					    "@timestamp": "2015-08-23T00:10:13+00:00",
-					    "notificationType": "PROBLEM",
-					    "voAlertType": "SERVICE",
-					    "voAlertReceivedTime": "2015-08-23T00:10:13+00:00",
-					    "entityDisplayName": "Apdex score &lt; 0.7",
-					    "messageType": "CRITICAL",
-					    "alertType": "PROBLEM",
-					    "hostName": "\"\"",
-					    "voUuid": "b295e252-67f2-4317-ab51-fa2856f4fb2d",
-					    "entityState": "CRITICAL",
-					    "ackAuthor": "\"\"",
-					    "entityId": "NewRelic-Apdex score &lt; 0.7-17039499-",
-					    "stateMessage": "New alert for BookingWeb: Apdex score &lt; 0.7",
-					    "icingaInstance": "NewRelic",
-					    "serviceDesc": "NewRelic-Apdex score &lt; 0.7-17039499-",
-					    "message": "Apdex score &lt; 0.7",
-					    "entityIsHost": "false",
-					    "routingKey": "newRelic",
-					    "voMonitorType": 6,
-					    "summary": "PROBLEM  NewRelic-Apdex score &lt; 0.7-17039499- CRITICAL",
-					    "team": "Unknown",
-		            	"incidentName": '1234'
-		            });
-				})
-				.then(done)
-				.catch(function(e) {
-					expect(e).to.be(null); 
-				});
+				.then(expectObjectToHaveProperties.bind({ 
+	            	"incidentName": '1234'
+				}))
+				.then(done);
 		});
 
 		it('incident acknowledgment is stored to elasticsearch', function(done) {
@@ -156,43 +135,13 @@ describe('river_styx-victorops', function() {
 				})
 				.then(waitFor(100))
 				.then(fakeEsSocumentStore.get.bind(undefined, 'releases-2015.09', 'victoropsAlert', 'b295e252-67f2-4317-ab51-fa2856f4fb2d'))
-				.then(function(storedDocument) {
-					expect(storedDocument).to.eql({
-					    "incident": 7794913,
-					    "monitoringTool": "NewRelic",
-					    "stateStartTime": "2015-08-23T00:10:13+00:00",
-					    "@timestamp": "2015-08-23T00:10:13+00:00",
-					    "notificationType": "PROBLEM",
-					    "voAlertType": "SERVICE",
-					    "voAlertReceivedTime": "2015-08-23T00:10:13+00:00",
-					    "entityDisplayName": "Apdex score &lt; 0.7",
-					    "messageType": "CRITICAL",
-					    "alertType": "PROBLEM",
-					    "hostName": "\"\"",
-					    "voUuid": "b295e252-67f2-4317-ab51-fa2856f4fb2d",
-					    "entityState": "CRITICAL",
-					    "ackAuthor": "\"\"",
-					    "entityId": "NewRelic-Apdex score &lt; 0.7-17039499-",
-					    "stateMessage": "New alert for BookingWeb: Apdex score &lt; 0.7",
-					    "icingaInstance": "NewRelic",
-					    "serviceDesc": "NewRelic-Apdex score &lt; 0.7-17039499-",
-					    "message": "Apdex score &lt; 0.7",
-					    "entityIsHost": "false",
-					    "routingKey": "newRelic",
-					    "voMonitorType": 6,
-					    "summary": "PROBLEM  NewRelic-Apdex score &lt; 0.7-17039499- CRITICAL",
-					    "team": "Unknown",
-		            	"incidentName": '1234',
-		            	"acknowledged": true,
-						"acknowledgedBy": 'someperson',
-						"acknowledgedAt": '2015-09-05T12:59:45+01:00',
-						"timeToAcknowledgement": 10000 
-		            });
-				})
-				.then(done)
-				.catch(function(e) {
-					expect(e).to.be(null); 
-				});
+				.then(expectObjectToHaveProperties.bind({ 
+					"acknowledged": true,
+					"acknowledgedBy": 'someperson',
+					"acknowledgedAt": '2015-09-05T12:59:45+01:00',
+					"timeToAcknowledgement": 10000 
+				}))
+				.then(done);
 		});
 
 		it('incident resolution is stored to elasticsearch', function(done) {
@@ -215,46 +164,12 @@ describe('river_styx-victorops', function() {
 				})
 				.then(waitFor(100))
 				.then(fakeEsSocumentStore.get.bind(undefined, 'releases-2015.09', 'victoropsAlert', 'b295e252-67f2-4317-ab51-fa2856f4fb2d'))
-				.then(function(storedDocument) {
-					expect(storedDocument).to.eql({
-					    "incident": 7794913,
-					    "monitoringTool": "NewRelic",
-					    "stateStartTime": "2015-08-23T00:10:13+00:00",
-					    "@timestamp": "2015-08-23T00:10:13+00:00",
-					    "notificationType": "PROBLEM",
-					    "voAlertType": "SERVICE",
-					    "voAlertReceivedTime": "2015-08-23T00:10:13+00:00",
-					    "entityDisplayName": "Apdex score &lt; 0.7",
-					    "messageType": "CRITICAL",
-					    "alertType": "PROBLEM",
-					    "hostName": "\"\"",
-					    "voUuid": "b295e252-67f2-4317-ab51-fa2856f4fb2d",
-					    "entityState": "CRITICAL",
-					    "ackAuthor": "\"\"",
-					    "entityId": "NewRelic-Apdex score &lt; 0.7-17039499-",
-					    "stateMessage": "New alert for BookingWeb: Apdex score &lt; 0.7",
-					    "icingaInstance": "NewRelic",
-					    "serviceDesc": "NewRelic-Apdex score &lt; 0.7-17039499-",
-					    "message": "Apdex score &lt; 0.7",
-					    "entityIsHost": "false",
-					    "routingKey": "newRelic",
-					    "voMonitorType": 6,
-					    "summary": "PROBLEM  NewRelic-Apdex score &lt; 0.7-17039499- CRITICAL",
-					    "team": "Unknown",
-		            	"incidentName": '1234',
-		            	"acknowledged": true,
-						"acknowledgedBy": 'someperson',
-						"acknowledgedAt": '2015-09-05T12:59:45+01:00',
-						"timeToAcknowledgement": 10000,
-						"resolved": true,
-						"resolvedAt": '2015-09-05T13:03:26+01:00',
-						"timeToResolution": 231000
-		            });
-				})
-				.then(done)
-				.catch(function(e) {
-					expect(e).to.be(null); 
-				});
+				.then(expectObjectToHaveProperties.bind({ 
+					'resolved': true,
+					'resolvedAt': '2015-09-05T13:03:26+01:00', 
+					'timeToResolution': 231000
+				}))
+				.then(done);
 		});
 	});
 });
