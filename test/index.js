@@ -138,7 +138,7 @@ describe('river_styx-victorops', function() {
 				.then(expectObjectToHaveProperties.bind({ 
 					"acknowledged": true,
 					"acknowledgedBy": 'someperson',
-					"acknowledgedAt": '2015-09-05T12:59:45+01:00',
+					"acknowledgedAt": '2015-09-05T11:59:45+00:00',
 					"timeToAcknowledgement": 10000 
 				}))
 				.then(done);
@@ -166,7 +166,7 @@ describe('river_styx-victorops', function() {
 				.then(fakeEsSocumentStore.get.bind(undefined, 'releases-2015.09', 'victoropsAlert', 'b295e252-67f2-4317-ab51-fa2856f4fb2d'))
 				.then(expectObjectToHaveProperties.bind({ 
 					'resolved': true,
-					'resolvedAt': '2015-09-05T13:03:26+01:00', 
+					'resolvedAt': '2015-09-05T12:03:26+00:00', 
 					'timeToResolution': 231000
 				}))
 				.then(done);
