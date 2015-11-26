@@ -171,5 +171,33 @@ describe('river_styx-victorops', function() {
 				}))
 				.then(done);
 		});
+
+		it('incident resolution is stored to elasticsearch', function(done) {
+			fakeEsSocumentStore.setSearchResponse('releases-2015.09', {"query":{"filtered":{"filter":{"bool":{"must":[{"range":{"@timestamp":{"from":"now-12h"}}},{"term":{"_type":"victoropsAlert"}},{"term":{"incidentName":"1234"}}]}}}},"size":1}, {
+				hits: {
+					hits: [
+						{ _source: { voUuid: "b295e252-67f2-4317-ab51-fa2856f4fb2d", voAlertReceivedTime: 1441454375000 } }
+					]
+				}
+			});
+
+			new App({ elasticsearch: { host: 'localhost' } })
+				.start()
+				.then(function() { 
+					var events = JSON.parse(fs.readFileSync(__dirname + '/data/alertThenAcknowledgedAndResolved.json'));
+
+					while(events.length) {
+						inputExchange.publish('', JSON.stringify(events.shift())); 
+					}
+				})
+				.then(waitFor(100))
+				.then(fakeEsSocumentStore.get.bind(undefined, 'releases-2015.09', 'victoropsAlert', 'b295e252-67f2-4317-ab51-fa2856f4fb2d'))
+				.then(expectObjectToHaveProperties.bind({ 
+					'resolved': true,
+					'resolvedAt': '2015-09-05T12:03:26+00:00', 
+					'timeToResolution': 231000
+				}))
+				.then(done);
+		});
 	});
 });
