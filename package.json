@@ -28,6 +28,6 @@
     "moment": "^2.6.0",
     "proxyquire": "^0.6.0",
     "redis": "^0.10.3",
-    "request": "^2.61.0"
+    "request": "^2.71.0"
   }
 }
