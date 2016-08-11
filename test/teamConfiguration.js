@@ -1,7 +1,7 @@
 var expect = require('expect.js');
 var TeamConfiguration = require('../lib/teamConfiguration');
 
-describe('Team Configuration', function() {
+describe.skip('Team Configuration', function() {
 	describe('get team for alert', function() {
 		it('returns Unknown when no team matched', function() {
 			var teamConfiguration = new TeamConfiguration({
@@ -17,7 +17,7 @@ describe('Team Configuration', function() {
 		it('returns Unknown when the team does not have a monitoring_tool definition', function() {
 			var teamConfiguration = new TeamConfiguration({
 				"teams": [
-					{ 
+					{
 						"name": "Reservations",
 						"NewRelic": "RES"
 					}
@@ -33,7 +33,7 @@ describe('Team Configuration', function() {
 		it('gets team for new relic with correct product prefix', function() {
 			var teamConfiguration = new TeamConfiguration({
 				"teams": [
-					{ 
+					{
 						"name": "Reservations",
 						"NewRelic": "RES"
 					}

@@ -1,7 +1,7 @@
 {
-  "name": "gocd.pipeline-status-aggregator",
-  "version": "0.0.1",
-  "description": "Take pipeline status update and record it in Elasticsearch",
+  "name": "river-styx-victorops",
+  "version": "1.0.0",
+  "description": "Take VictorOps webhooks and process them for insertion into multiple systems.",
   "main": "lib/index.js",
   "scripts": {
     "test": "grunt",
@@ -18,15 +18,15 @@
     "load-grunt-tasks": "~0.4.0",
     "mocha": "~1.12.1",
     "nock": "^2.12.0",
-    "redis-mock": "^0.3.0"
+    "redis-mock": "^0.3.0",
+    "proxyquire": "^0.6.0",
+    "should": "^10.0.0"
   },
   "dependencies": {
     "amqp": "^0.2.0",
-    "bluebird": "^2.1.2",
     "lodash": "^3.9.3",
     "logall": "0.0.1",
     "moment": "^2.6.0",
-    "proxyquire": "^0.6.0",
     "redis": "^0.10.3",
     "request": "^2.71.0"
   }

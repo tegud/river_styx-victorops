@@ -40,7 +40,7 @@ module.exports = function() {
 		request.on('data', function(chunk) {
 			body += chunk;
 		});
-		
+
 		request.on('end', function() {
 			var parsedBody = JSON.parse(body);
 			var responseBody;

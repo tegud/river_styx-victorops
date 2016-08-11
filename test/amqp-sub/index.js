@@ -28,9 +28,9 @@ function generateConnectionKey(options) {
 function QueueIntercept(queueName, options) {
 	var subscriptions = [];
 
-	return { 
-		name: queueName, 
-		options: options, 
+	return {
+		name: queueName,
+		options: options,
 		api: {
 			bind: function(exchange, routingKey) {
 				if(!exchanges[exchange]) {
@@ -74,7 +74,7 @@ function ConnectionIntercept(options) {
 						logger.logInfo('Queue already exists.', { queue: queueName });
 					}
 					else {
-						logger.logInfo('Queue Created', { queue: queueName, options: options });
+						logger.logInfo('Queue Created', { queue: queueName, options: JSON.stringify(options) });
 						queues[queueName] = new QueueIntercept(queueName, options);
 					}
 
@@ -119,6 +119,9 @@ function ConnectionIntercept(options) {
 						_.each(this.boundQueues, function(queue) {
 							logger.logInfo('Publishing message to bound queue', { queue: queue });
 
+							console.log('##################')
+							console.log(queues);
+
 							queues[queue].publish(message);
 						});
 					}).bind(exchanges[exchangeName])
@@ -136,7 +139,7 @@ amqp.createConnection = createConnectionIntercept;
 module.exports = {
 	mock: function(options) {
 		var connectionKey = generateConnectionKey(options);
-		
+
 		if(!interceptedConnections[connectionKey]) {
 			interceptedConnections[connectionKey] = new ConnectionIntercept(options);
 		}
