@@ -89,6 +89,7 @@ describe('river_styx-victorops', () => {
 			.then(fakeEsSocumentStore.get.bind(undefined, `releases-${moment().format('YYYY.MM')}`, 'victoropsAlert', 'test-prefix-7321'))
 			.then(function(storedDocument) {
 				storedDocument.should.eql({
+					"@timestamp": "2016-07-28T09:38:59Z",
 					team: "Unknown",
 					startedAt: '2016-07-28T09:38:59Z',
 				    incident: {
