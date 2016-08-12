@@ -20,11 +20,7 @@ const App = proxyquire('../lib/server', {
 		};
 	}
 });
-const FakeEsSocumentStore = require('./es-fake-documentstore');
-
-function waitFor(time) {
-	return () => new Promise(resolve => setTimeout(() => resolve(), time));
-}
+const FakeEsDocumentStore = require('./es-fake-documentstore');
 
 describe('river_styx-victorops', () => {
 	let fakeEsSocumentStore;
@@ -33,7 +29,7 @@ describe('river_styx-victorops', () => {
 	beforeEach(() => {
 		const mockAmqpServer = amqpSub.mock({ host: '127.0.0.1', port: 5672 })
 		inputExchange = mockAmqpServer.exchange('river-styx');
-		fakeEsSocumentStore = new FakeEsSocumentStore();
+		fakeEsSocumentStore = new FakeEsDocumentStore();
 		fakeEsSocumentStore.start();
 		events.removeAllListeners();
 	});
@@ -43,57 +39,68 @@ describe('river_styx-victorops', () => {
 		amqpSub.reset();
 	});
 
-	describe('victorops webhook alert', function() {
-		it('is stored to elasticsearch', done => new App()
-			.start()
-			.then(() => inputExchange.publish('', JSON.stringify({
-				"type": "victoropsv2-incident",
-				"message": {
-				    incident: {
-				        entityType: 'SERVICE'
-				    },
-				    alert: {
-				        serviceState: 'CRITICAL',
-				        receiveTime: 1469698739694,
-				        url: '',
-				        entity: {
-				            displayName: 'disk space/db01.mycompany.com',
-				            state: 'CRITICAL'
-				        },
-				        messageType: 'CRITICAL',
-				        monitorName: '',
-				        monitoringTool: 'API',
-				        routingKey: '',
-				        timestamp: 1469698739694
-				    },
-				    state: {
-				        ack: {
-				            message: '',
-				            user: 'SYSTEM',
-				            timestamp: 0
-				        },
-				        alertCount: '1',
-				        currentAlertPhase: 'UNACKED',
-				        currentState: 'CRITICAL',
-				        entityId: 'disk space/db01.mycompany.com',
-				        host: '',
-				        name: '7321',
-				        timestamp: 1469698739694,
-				        lastTimestamp: 0,
-				        monitorType: 'API',
-				        service: 'disk space/db01.mycompany.com'
-				    }
-				}
-			})))
-			.then(waitFor(100))
-			.then(fakeEsSocumentStore.get.bind(undefined, `releases-${moment().format('YYYY.MM')}`, 'victoropsAlert', 'test-prefix-7321'))
-			.then(function(storedDocument) {
-				storedDocument.should.eql({
+	function waitFor(time) {
+		return new Promise(resolve => {
+			setTimeout(() => resolve(), 1000);
+		});
+	}
+
+	describe('victorops webhook alert', () => {
+		it('is stored to elasticsearch', () => {
+			new App()
+				.start()
+				.then(() => inputExchange.publish('', JSON.stringify({
+					"type": "victoropsv2-incident",
+					"message": {
+					    incident: {
+					        entityType: 'SERVICE'
+					    },
+					    alert: {
+					        serviceState: 'CRITICAL',
+					        receiveTime: 1469698739694,
+					        url: '',
+					        entity: {
+					            displayName: 'disk space/db01.mycompany.com',
+					            state: 'CRITICAL'
+					        },
+					        messageType: 'CRITICAL',
+					        monitorName: '',
+					        monitoringTool: 'API',
+					        routingKey: '',
+					        timestamp: 1469698739694
+					    },
+					    state: {
+					        ack: {
+					            message: '',
+					            user: 'SYSTEM',
+					            timestamp: 0
+					        },
+					        alertCount: '1',
+					        currentAlertPhase: 'UNACKED',
+					        currentState: 'CRITICAL',
+					        entityId: 'disk space/db01.mycompany.com',
+					        host: '',
+					        name: '7321',
+					        timestamp: 1469698739694,
+					        lastTimestamp: 0,
+					        monitorType: 'API',
+					        service: 'disk space/db01.mycompany.com'
+					    }
+					}
+				})));
+
+			return waitFor(50)
+				.then(fakeEsSocumentStore.get.bind(undefined, `releases-${moment().format('YYYY.MM')}`, 'victoropsAlert', 'test-prefix-7321'))
+				.should.eventually.eql({
 					"@timestamp": "2016-07-28T09:38:59Z",
 					team: "Unknown",
 					startedAt: '2016-07-28T09:38:59Z',
 					acknowledged: false,
                     resolved: false,
+					incidentName: '7321',
+					host: '',
+					service: 'disk space/db01.mycompany.com',
+					monitoringTool: 'API',
 				    incident: {
 				        entityType: 'SERVICE'
 				    },
@@ -127,7 +134,6 @@ describe('river_styx-victorops', () => {
 				        service: 'disk space/db01.mycompany.com'
 				    }
 				});
-			})
-			.then(done));
+			});
 		});
 });

@@ -57,27 +57,25 @@ module.exports = function() {
 	});
 
 	return {
-		start: function() {
-			server.listen(9200);
-		},
-		get: function(index, type, id) {
-			return new Promise(function(resolve, reject) {
-				if(!indicies[index]) {
-					return reject('Index missing');
-				}
+		start: () => server.listen(9200),
+		get: (index, type, id) => new Promise((resolve, reject) => {
+			if(!indicies[index]) {
+				console.error(`Could not find index: ${index}`);
+				return reject('Index missing');
+			}
 
-				if(!indicies[index][type]) {
-					return reject('Type missing');
-				}
+			if(!indicies[index][type]) {
+				console.error(`Could not find type: ${type} in index ${index}`);
+				return reject('Type missing');
+			}
 
-				if(!indicies[index][type][id]) {
-					return reject('Document missing');
-				}
+			if(!indicies[index][type][id]) {
+				console.error(`Could not find document with id: ${id} in index ${index}, type: ${type}`);
+				return reject('Document missing');
+			}
 
-				resolve(indicies[index][type][id]);
-			});
-
-		},
+			resolve(indicies[index][type][id]);
+		}),
 		setSearchResponse: function(index, search, response) {
 			searches[index + '-' + JSON.stringify(search)] = response;
 		},
