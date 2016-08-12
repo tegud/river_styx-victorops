@@ -10,7 +10,31 @@ describe('Victor Ops to alert', () => {
         }).should.have.properties({'startedAt': '2016-07-28T09:38:59Z'});
     });
 
+    it('should set acknowledged to false', () => {
+        victoropsToAlert({ getTeamForAlert: () => {} }, {
+            state: {
+                timestamp: 1469698739694
+            }
+        }).should.have.properties({ 'acknowledged': false });
+    });
+
+    it('should set resolved to false', () => {
+        victoropsToAlert({ getTeamForAlert: () => {} }, {
+            state: {
+                timestamp: 1469698739694
+            }
+        }).should.have.properties({ 'resolved': false });
+    });
+
     describe('acknowledged alerts', () => {
+        it('should set acknowledged to true', () => {
+            victoropsToAlert({ getTeamForAlert: () => {} }, {
+                state: {
+                    timestamp: 1469698739694
+                }
+            }).should.have.properties({ 'acknowledged': false });
+        });
+
         it('should set acknowledgedAt', () => {
             victoropsToAlert({ getTeamForAlert: () => {} }, {
                 state: {
@@ -50,6 +74,16 @@ describe('Victor Ops to alert', () => {
     });
 
     describe('resolved alerts', () => {
+        it('should set resolved to true', () => {
+            victoropsToAlert({ getTeamForAlert: () => {} }, {
+                state: {
+                    currentAlertPhase: 'RESOLVED',
+                    timestamp: 1469698739694,
+                    lastTimestamp: 1469698779694
+                }
+            }).should.have.properties({ 'resolved': true });
+        });
+
         it('should set resolvedAt', () => {
             victoropsToAlert({ getTeamForAlert: () => {} }, {
                 state: {

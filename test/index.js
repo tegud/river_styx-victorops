@@ -92,6 +92,8 @@ describe('river_styx-victorops', () => {
 					"@timestamp": "2016-07-28T09:38:59Z",
 					team: "Unknown",
 					startedAt: '2016-07-28T09:38:59Z',
+					acknowledged: false,
+                    resolved: false,
 				    incident: {
 				        entityType: 'SERVICE'
 				    },
