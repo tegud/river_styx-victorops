@@ -115,4 +115,15 @@ describe('Victor Ops to alert', () => {
             }
         }).should.have.properties({ 'timeToResolution': 40000 }));
     });
+
+    describe('resolved but not acknowledged alerts', () => {
+        it('should set acknowledged to false', () => victoropsToAlert({ getTeamForAlert: () => {} }, {
+            state: {
+                ack: { message: '', user: '' },
+                currentAlertPhase: 'RESOLVED',
+                timestamp: 1469698739694,
+                lastTimestamp: 1469698779694
+            }
+        }).should.have.properties({ 'acknowledged': false }));
+    });
 });
