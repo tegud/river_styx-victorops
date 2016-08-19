@@ -1,5 +1,5 @@
 var amqp = require('amqp');
-var logger = require('../../lib/logger').forModule('AMQP Mock Server');
+var logger = require('../../../lib/logger').forModule('AMQP Mock Server');
 var events = require('events');
 var _ = require('lodash');
 
@@ -118,9 +118,6 @@ function ConnectionIntercept(options) {
 
 						_.each(this.boundQueues, function(queue) {
 							logger.logInfo('Publishing message to bound queue', { queue: queue });
-
-							console.log('##################')
-							console.log(queues);
 
 							queues[queue].publish(message);
 						});
